@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Sistema de Pedidos</title>
+</head>
+<body>
+  <h1>Fazer Pedido</h1>
+  <form id="pedido-form">
+    <label>Nome do Cliente:<br>
+      <input type="text" id="nome" required>
+    </label><br><br>
+
+    <label>Itens do Pedido:<br>
+      <textarea id="itens" required></textarea>
+    </label><br><br>
+
+    <button type="submit">Enviar Pedido</button>
+  </form>
+
+  <p id="mensagem"></p>
+
+  <script>
+    document.getElementById('pedido-form').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const nome = document.getElementById('nome').value;
+      const itens = document.getElementById('itens').value;
+
+      try {
+        const resposta = await fetch('http://localhost:3000/pedidos', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ nome, itens })
+        });
+
+        if (!resposta.ok) {
+          throw new Error('Erro ao enviar pedido');
+        }
+
+        const dados = await resposta.json();
+        document.getElementById('mensagem').innerText = `Pedido enviado! ID: ${dados.id}`;
+      } catch (erro) {
+        console.error('Erro ao enviar pedido:', erro);
+        document.getElementById('mensagem').innerText = 'Erro ao enviar pedido.';
+      }
+    });
+  </script>
+</body>
+</html>
